@@ -1,4 +1,4 @@
 {
-  "mongoURI": "mongodb+srv://ezbiz:5m5u80EzxukaKiOY@ez-biz.5ucuj.mongodb.net/ezbiz?retryWrites=true&w=majority",
+  "mongoURI": "mongodb+srv://ezbiz:5m5u80EzxukaKiOY@ez-biz.5ucuj.mongodb.net/ezbiz1?retryWrites=true&w=majority",
   "jwtSecret": "secret"
 }
