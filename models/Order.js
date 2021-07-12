@@ -14,6 +14,10 @@ const UserSchema = new Schema({
     type: Date,
     required: true
   },
+  purchaseDate: {
+    type: Date,
+    default: Date.now
+  },
   Price: {
     type: Number,
     required: true
