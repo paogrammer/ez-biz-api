@@ -25,6 +25,8 @@ router.get('/', auth, async (req, res) => {
 // @desc     POST New Inventory
 // @access   Private
 router.post('/', auth, async (req, res) => {
+  console.log(req.body, 'req body');
+
   try {
     const userID = req.user.id;
 
@@ -44,6 +46,19 @@ router.patch('/', auth, async (req, res) => {
     await Inventory.updateOne({ _id: inventoryID }, req.body);
 
     res.status(200).json({ status: 'success', inventory: req.body });
+  } catch (error) {
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
+router.delete('/', auth, async (req, res) => {
+  try {
+    const inventoryID = req.query.inventoryID;
+    const inventory = await Inventory.findOneAndDelete({
+      _id: inventoryID
+    });
+
+    res.status(200).json({ status: 'success', inventory: inventory });
   } catch (error) {
     res.status(500).json({ error: 'Server Error' });
   }
