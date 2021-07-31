@@ -13,6 +13,7 @@ connectDB();
 app.use(express.json());
 
 app.use(cors());
+app.use('/public', express.static('public'));
 
 // morgan HTTP request logger middleware
 app.use(logger('dev'));
@@ -28,9 +29,10 @@ app.use('/api/dashboard', require('./routes/api/dashboard'));
 if (process.env.NODE_ENV === 'production') {
   // Set static folder
   app.use(express.static('client/build'));
-
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    res.sendFile(
+      path.resolve(__dirname, 'client', 'build', 'index.html', 'public')
+    );
   });
 }
 

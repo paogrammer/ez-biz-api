@@ -1,8 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
+const multer = require('multer');
+const path = require('path');
 
 const Inventory = require('../../models/Inventory');
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+var upload = multer({ storage: storage });
 
 // @route    GET api/inventory
 // @desc     Get Inventory List
@@ -24,15 +37,16 @@ router.get('/', auth, async (req, res) => {
 // @route    POST api/inventory
 // @desc     POST New Inventory
 // @access   Private
-router.post('/', auth, async (req, res) => {
-  console.log(req.body, 'req body');
-
+router.post('/', auth, upload.single('photo'), async (req, res) => {
   try {
     const userID = req.user.id;
 
-    const inventory = new Inventory({ ...req.body, userID });
+    const inventory = new Inventory({
+      ...req.body,
+      userID,
+      photo: req.file ? req.file.path : null
+    });
     await inventory.save();
-
     res.status(200).json({ status: 'success', inventory: inventory._doc });
   } catch (error) {
     res.status(500).json({ error: 'Server Error' });
