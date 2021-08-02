@@ -55,4 +55,17 @@ router.patch('/', auth, async (req, res) => {
   }
 });
 
+router.delete('/', auth, async (req, res) => {
+  try {
+    const orderID = req.query.orderID;
+    const order = await Order.findOneAndDelete({
+      _id: orderID
+    });
+
+    res.status(200).json({ status: 'success', order: order });
+  } catch (error) {
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
 module.exports = router;
