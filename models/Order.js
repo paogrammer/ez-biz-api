@@ -10,13 +10,13 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  deliveryDate: {
-    type: Date,
+  customerAddress: {
+    type: String,
     required: true
   },
-  purchaseDate: {
-    type: Date,
-    default: Date.now
+  customerNumber: {
+    type: String,
+    required: true
   },
   Price: {
     type: Number,
