@@ -26,6 +26,10 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     require: true,
     ref: 'user'
+  },
+  quantity: {
+    type: Number,
+    required: true
   }
 });
 

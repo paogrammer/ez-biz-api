@@ -8,6 +8,8 @@ router.get('/', auth, async (req, res) => {
   try {
     const ordersCount = await Order.countDocuments({});
 
+  
+
     const revenues = await Order.aggregate([
       { $group: { _id: null, revenue: { $sum: '$Price' } } }
     ]);
@@ -20,6 +22,7 @@ router.get('/', auth, async (req, res) => {
       }
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Server Error' });
   }
 });

@@ -21,13 +21,25 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const userID = req.user.id;
+    console.log(req.body.inventories);
+    for (const inventory of req.body.inventories) {
+      if (inventory.isChecked) {
+        const order = new Order({
+          productName: inventory.itemName,
+          customerName: inventory.customerName,
+          customerAddress: inventory.customerAddress,
+          customerNumber: inventory.customerNumber,
+          Price: inventory.Price,
+          quantity: inventory.quantity,
+          userID: userID
+        });
+        await order.save();
+      }
+    }
 
-    const order = new Order({ ...req.body, userID });
-    await order.save();
-
-    res.status(200).json({ status: 'success', order: order._doc });
+    res.status(200).json({ status: 'success' });
   } catch (error) {
-    res.status(500).json({ error: 'Server Error' });
+    res.status(500).json({ error: error });
   }
 });
 
