@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 
 const Order = require('../../models/Order');
+const Inventory = require('../../models/Inventory');
 
 router.get('/', auth, async (req, res) => {
   try {
@@ -12,6 +13,7 @@ router.get('/', auth, async (req, res) => {
     let totalSale = 0;
     let totalSaleLastSevenDays = 0;
     let totalSaleLastThirtyDays = 0;
+
     allOrders.map((order) => {
       if (order?.quantity) {
         totalSale =
@@ -43,6 +45,26 @@ router.get('/', auth, async (req, res) => {
       { $group: { _id: null, revenue: { $sum: '$Price' } } }
     ]);
 
+    const sortProducts = await Order.aggregate([
+      {
+        $group: {
+          _id: '$productName',
+
+          count: { $sum: 1 }
+        }
+      },
+
+      { $sort: { count: -1 } }
+    ]);
+
+    let topProducts = [];
+    for (const product of sortProducts) {
+      const _product = await Inventory.findOne({ itemName: product._id });
+      topProducts.push(_product);
+    }
+
+    console.log(topProducts);
+
     res.status(200).json({
       status: 'success',
       dashboard: {
@@ -50,11 +72,11 @@ router.get('/', auth, async (req, res) => {
         revenue: revenues[0]?.revenue || null,
         totalSale: totalSale,
         totalSaleLastThirtyDays: totalSaleLastThirtyDays,
-        totalSaleLastSevenDays: totalSaleLastSevenDays
+        totalSaleLastSevenDays: totalSaleLastSevenDays,
+        topProducts: topProducts
       }
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: 'Server Error' });
   }
 });
