@@ -1,14 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const Order = require('../../models/Order');
 const Inventory = require('../../models/Inventory');
 
 router.get('/', auth, async (req, res) => {
   try {
-    const ordersCount = await Order.countDocuments({});
-    const allOrders = await Order.find();
+    const userID = req.user.id;
+    const ordersCount = await Order.countDocuments({ userID });
+    const allOrders = await Order.find({ userID });
 
     let totalSale = 0;
     let totalSaleLastSevenDays = 0;
@@ -42,28 +45,39 @@ router.get('/', auth, async (req, res) => {
     });
 
     const revenues = await Order.aggregate([
-      { $group: { _id: null, revenue: { $sum: '$Price' } } }
+      {
+        $match: {
+          userID: ObjectId(userID)
+        }
+      },
+      {
+        $group: { _id: null, revenue: { $sum: '$Price' } }
+      }
     ]);
 
     const sortProducts = await Order.aggregate([
       {
+        $match: {
+          userID: ObjectId(userID)
+        }
+      },
+      {
         $group: {
           _id: '$productName',
-
           count: { $sum: 1 }
         }
       },
-
       { $sort: { count: -1 } }
     ]);
 
     let topProducts = [];
     for (const product of sortProducts) {
-      const _product = await Inventory.findOne({ itemName: product._id });
+      const _product = await Inventory.findOne({
+        itemName: product._id,
+        userID
+      });
       topProducts.push(_product);
     }
-
-    console.log(topProducts);
 
     res.status(200).json({
       status: 'success',
