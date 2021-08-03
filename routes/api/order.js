@@ -31,7 +31,8 @@ router.post('/', auth, async (req, res) => {
           customerNumber: inventory.customerNumber,
           Price: inventory.Price,
           quantity: inventory.quantity,
-          userID: userID
+          userID: userID,
+          purchaseDate: Date.now()
         });
         await order.save();
       }

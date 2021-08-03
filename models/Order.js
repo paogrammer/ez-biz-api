@@ -30,6 +30,10 @@ const UserSchema = new Schema({
   quantity: {
     type: Number,
     required: true
+  },
+  purchaseDate: {
+    type: Date,
+    required: true
   }
 });
 
