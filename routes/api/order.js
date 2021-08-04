@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 
 const Order = require('../../models/Order');
+const Inventory = require('../../models/Inventory');
 
 router.get('/', auth, async (req, res) => {
   try {
@@ -21,7 +22,7 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const userID = req.user.id;
-    console.log(req.body.inventories);
+
     for (const inventory of req.body.inventories) {
       if (inventory.isChecked) {
         const order = new Order({
@@ -35,6 +36,13 @@ router.post('/', auth, async (req, res) => {
           purchaseDate: Date.now()
         });
         await order.save();
+
+        await Inventory.updateOne(
+          { _id: inventory._id },
+          {
+            $inc: { stockAmount: -inventory.quantity }
+          }
+        );
       }
     }
 
