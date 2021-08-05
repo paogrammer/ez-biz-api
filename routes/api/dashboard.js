@@ -16,11 +16,13 @@ router.get('/', auth, async (req, res) => {
     let totalSale = 0;
     let totalSaleLastSevenDays = 0;
     let totalSaleLastThirtyDays = 0;
+    let revenues = 0;
 
     allOrders.map((order) => {
       if (order?.quantity) {
-        totalSale =
-          totalSale + parseFloat(order.Price) * parseFloat(order.quantity);
+        revenues =
+          revenues + parseFloat(order.quantity) * parseFloat(order.Price);
+        totalSale = totalSale + parseFloat(order.quantity);
 
         // To set two dates to two variables
         let date2 = new Date();
@@ -33,27 +35,14 @@ router.get('/', auth, async (req, res) => {
         let Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
         if (Difference_In_Days < 7) {
           totalSaleLastSevenDays =
-            totalSaleLastSevenDays +
-            parseFloat(order.Price) * parseFloat(order.quantity);
+            totalSaleLastSevenDays + parseFloat(order.quantity);
         }
         if (Difference_In_Days < 30) {
           totalSaleLastThirtyDays =
-            totalSaleLastThirtyDays +
-            parseFloat(order.Price) * parseFloat(order.quantity);
+            totalSaleLastThirtyDays + parseFloat(order.quantity);
         }
       }
     });
-
-    const revenues = await Order.aggregate([
-      {
-        $match: {
-          userID: ObjectId(userID)
-        }
-      },
-      {
-        $group: { _id: null, revenue: { $sum: '$Price' } }
-      }
-    ]);
 
     const sortProducts = await Order.aggregate([
       {
@@ -83,7 +72,7 @@ router.get('/', auth, async (req, res) => {
       status: 'success',
       dashboard: {
         ordersCount,
-        revenue: revenues[0]?.revenue || null,
+        revenue: revenues || null,
         totalSale: totalSale,
         totalSaleLastThirtyDays: totalSaleLastThirtyDays,
         totalSaleLastSevenDays: totalSaleLastSevenDays,
