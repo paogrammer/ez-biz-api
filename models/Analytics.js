@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const AnalyticsSchema = new Schema({
   revenue: {
     type: String,
     required: true
@@ -21,4 +21,4 @@ const UserSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('analytics', UserSchema);
+module.exports = mongoose.model('analytics', AnalyticsSchema);

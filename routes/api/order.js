@@ -19,6 +19,20 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const order = await Order.find({
+      _id: id
+    }).lean();
+
+    res.status(200).json({ status: 'success', order });
+  } catch (error) {
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
 router.post('/', auth, async (req, res) => {
   try {
     const userID = req.user.id;
@@ -26,7 +40,9 @@ router.post('/', auth, async (req, res) => {
     for (const inventory of req.body.inventories) {
       if (inventory.isChecked) {
         const order = new Order({
+          productId: inventory._id,
           productName: inventory.itemName,
+          description: inventory.description,
           customerName: inventory.customerName,
           customerAddress: inventory.customerAddress,
           customerNumber: inventory.customerNumber,

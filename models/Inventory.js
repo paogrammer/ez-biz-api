@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const InventorySchema = new Schema({
   itemNo: {
     type: Number,
     required: true
@@ -33,4 +33,4 @@ const UserSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('inventory', UserSchema);
+module.exports = mongoose.model('inventory', InventorySchema);

@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
 const normalize = require('normalize-url');
+const auth = require('../../middleware/auth');
 
 const User = require('../../models/User');
 
@@ -80,5 +81,19 @@ router.post(
     }
   }
 );
+
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const user = await User.find({
+      _id: id
+    }).lean();
+
+    res.status(200).json({ status: 'success', user });
+  } catch (error) {
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
 
 module.exports = router;
